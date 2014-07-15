@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nacho Time</title>
+<script src="js/jquery-1.10.2.min.js"></script>
+<script src="js/jquery-ui-1.10.4.custom.min.js"></script>
+<script src="js/main.js"></script>
+<style type="text/css">
+@import url(http://fonts.googleapis.com/css?family=Raleway:400,100,200,300,500,600,700);
+::-webkit-scrollbar {
+	width: 7px; 
+	padding: 0; 
+	margin: 0;
+}
+::-webkit-scrollbar-track {
+	padding: 0; 
+	margin: 0;
+}
+
+::-webkit-scrollbar-thumb { 
+	padding: 0; 
+	margin: 0; 
+	border: 1px solid #404040;
+	border-radius: 14px;
+	background: #000;  
+}
+
+::-webkit-scrollbar-thumb:window-inactive { 
+	padding: 0; 
+	margin: 0;
+	border: 1px solid #404040;
+	border-radius: 10px;
+	background: #000; 
+}
+::-moz-selection {
+    background: transparent;
+    text-shadow: inherit;
+}
+
+::selection {
+    background: transparent;
+    text-shadow: inherit;
+}
+* {
+	outline: none;
+	outline: 0;
+	-webkit-tap-highlight-color: rgba(255,255,255,0);
+    -webkit-tap-highlight-color: transparent;
+}
+body {
+	background: #181818;
+	font-family: 'Raleway';
+	color: #9D9D9D;
+	margin: 0;
+	padding: 0;
+	cursor: default;
+}
+input {
+	color: #fff;
+}
+.kill_dialog, .about_dialog, .trailer_dialog {
+	display: none;
+	font-size: 13px;
+	text-align: center;
+}
+.ui-dialog {
+	background: #111;
+	border-radius: 5px;
+	padding: 10px;
+	box-shadow: 0 0 5px rgba(0,0,0,1);
+	color: #fff;
+	z-index: 20;
+}
+.ui-dialog-titlebar {
+	display: none;
+}
+.ui-dialog-buttonset {
+	text-align: center;
+}
+.ui-button {
+	background-image: -webkit-linear-gradient( top, rgba(42,115,208,1) 0%, rgba(16,88,179,1) 100% );
+	color: #fff;
+	text-shadow: 1px -1px 0 rgba(0,0,0,0.4);
+	cursor: pointer;
+	display: inline-block;
+	padding: 6px 0;
+	width: 88px;
+	text-align: center;
+	border-radius: 3px;
+	margin: 0 5px;
+	border: 0;
+}
+.sidebar {
+	background: #111;
+	padding: 10px;
+	max-width: 185px;
+	width: 100%;
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	top: 0;
+	z-index: 8;
+	overflow: hidden;
+	border-right: 1px solid #040404;
+	box-shadow: 0 0 4px rgba(0,0,0,0.5) inset;
+}
+.sidebar input {
+	background: transparent;
+	border: 2px solid #565656;
+	border-radius: 4px;
+	padding: 7px;
+	box-shadow: 0 0 3px #000 inset;
+	width: 165px;
+}
+.sidebar h1 {
+	color: #404040;
+	font-size: 19px;
+	font-weight: 700;
+	margin: 18px 0;
+	line-height: 0;
+}
+ul {
+	list-style: none;
+	padding: 0 0 0 0;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	max-height: 80%;
+}
+li {
+	color: #999;
+	padding: 7px 0 7px 10px;
+	margin: 2px 10px 2px 0;
+	border-radius: 3px;
+	font-size: 14px;
+	font-family: sans-serif;
+	font-weight: 600;
+}
+li:hover {
+	background-image: -webkit-linear-gradient( top, rgba(42,115,208,1) 0%, rgba(16,88,179,1) 100% );
+	color: #fff;
+	text-shadow: 1px -1px 0 rgba(0,0,0,0.4);
+	cursor: pointer;
+}
+.is_active {
+	background-image: -webkit-linear-gradient( top, rgba(42,115,208,1) 0%, rgba(16,88,179,1) 100% );
+	color: #fff;
+	text-shadow: 1px -1px 0 rgba(0,0,0,0.4);
+}
+.add_movie {
+	position: fixed;
+	bottom: 10px;
+	left: 10px;
+	width: 185px;
+	color: #999;
+	background: #303030;
+	text-align: center;
+	border-radius: 3px;
+	padding: 10px 0;
+	cursor: pointer;
+	z-index: 9;
+	text-transform: uppercase;
+	font-size: 13px;
+}
+.new_movie {
+	background: rgba(0,0,0,.7);
+	position: fixed;
+	top: 0;
+	left: 205px;
+	bottom: 0;
+	right: 0;
+	display: none;
+	z-index: 10;
+}
+.new_movie .wrapper {
+	width: 312px;
+	height: 60px;
+}
+.new_movie input {
+	background: transparent;
+	border: 2px solid #565656;
+	border-radius: 4px;
+	padding: 7px;
+	box-shadow: 0 0 3px #000 inset;
+	width: 165px;
+	font-size: 17px;
+}
+.submit_imdbid {
+	background-image: -webkit-linear-gradient( top, rgba(42,115,208,1) 0%, rgba(16,88,179,1) 100% );
+	color: #fff;
+	text-shadow: 1px -1px 0 rgba(0,0,0,0.4);
+	cursor: pointer;
+	display: inline-block;
+	padding: 10px 0;
+	width: 114px;
+	text-align: center;
+	border-radius: 3px;
+	margin: 0 0 0 10px;
+}
+.new_movie a {
+	font-size: 12px;
+	color: #377dd6;
+	text-decoration: none;
+}
+.error {
+	background: #fff;
+	border-radius: 5px;
+	padding: 10px;
+	color: #000;
+	width: 100%;
+	height: 100%;
+	line-height: 30px;
+	text-align: center;
+	margin: auto;
+	display: none;
+	position: absolute;
+}
+.content {
+	padding: 10px;
+	position: fixed;
+	left: 205px;
+	bottom: 0;
+	top: 0;
+	right: 0;
+	z-index: 8;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+.list_movie {
+	display: none;
+}
+.love, .kill {
+	text-indent: -99999px;
+	width: 20px;
+	height: 20px;
+	position: fixed;
+	bottom: 6px;
+	cursor: pointer;
+}
+.love {
+	background: url(images/love.png) no-repeat center;
+	background-size: cover;
+	right: 10px;
+}
+.kill {
+	background: url(images/kill.png) no-repeat center;
+	background-size: cover;
+	right: 35px;
+}
+.list_movie {
+	float: left;
+	margin: 8px;
+	cursor: pointer;
+}
+.list_movie:hover .cover:before {
+	background: url(images/eye.png) no-repeat center rgba(0,0,0,.4);
+	content: '';
+	width: 133px;
+	height: 199px;
+	display: block;
+	position: relative;
+	z-index: 9;
+}
+.cover {
+	background-size: cover;
+	width: 133px;
+	height: 199px;
+	overflow: hidden;
+	border: 1px solid #000;
+	border-radius: 3px;
+	box-shadow: 0 0 3px rgba(0,0,0,.8);
+	position: relative;
+}
+.cover span:nth-child(1) {
+	font-size: 9px;
+	color: #fff;
+	display: none;
+	background: #c0392b;
+	padding: 4px 0;
+	font-weight: 700;
+	text-transform: uppercase;
+	width: 172px;
+	position: absolute;
+	top: 169px;
+	left: -12px;
+	box-shadow: 0 2px 4px rgba(0,0,0,.7);
+	-webkit-transform: rotate(-6deg) translatez(0);
+	-moz-transform: rotate(-6deg) translatez(0);
+	-o-transform: rotate(-6deg) translatez(0);
+	-ms-transform: rotate(-6deg) translatez(0);
+	transform: rotate(-6deg) translatez(0);
+}
+.cover span:nth-child(2) {
+	font-size: 9px;
+	color: #fff;
+	display: none;
+	background: #c0392b;
+	padding: 4px 0;
+	font-weight: 700;
+	text-transform: uppercase;
+	width: 172px;
+	position: absolute;
+	top: 10px;
+	left: -12px;
+	box-shadow: 0 2px 4px rgba(0,0,0,.7);
+	-webkit-transform: rotate(-6deg) translatez(0);
+	-moz-transform: rotate(-6deg) translatez(0);
+	-o-transform: rotate(-6deg) translatez(0);
+	-ms-transform: rotate(-6deg) translatez(0);
+	transform: rotate(-6deg) translatez(0);
+}
+.list_movie.showSpan .cover>span {
+	display: block !important;
+}
+.list_movie h1 {
+	font-size: 13px;
+	color: #fff;
+	margin: 9px 0 0 0;
+	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 133px;
+}
+.list_movie>span {
+	font-size: 11px;
+	font-weight: 500;
+	color: #6b6b6b;
+	display: block;
+}
+.loading, .kill_bg {
+	background: rgba(0,0,0,.8);
+	position: fixed;
+	top: 0;
+	left: 205px;
+	bottom: 0;
+	right: 0;
+	display: none;
+	z-index: 12;
+}
+.content h2 {
+	font-size: 22px;
+	font-weight: 300;
+	text-shadow: 0 0 3px rgba(0,0,0,.5);
+}
+.movie_nfo {
+	background: #181818 no-repeat center;
+	background-size: cover;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	left: 205px;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	display: none;
+	z-index: 10;
+}
+.movie_nfo:after {
+	background: rgba(0,0,0,.8);
+	content: '';
+	display: block;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	left: 205px;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	box-shadow: 0 0 100px 55px rgba(0,0,0,.6) inset;
+	z-index: -1;
+}
+.movie_nfo .wrapper {
+	width: 800px;
+	padding: 0 10px;
+	overflow: hidden;
+}
+.bigcover {
+	width: 295px;
+	height: 443px;
+	background-size: cover;
+	background-repeat: no-repeat;
+	border: 1px solid #111;
+	border-radius: 3px;
+	box-shadow: 0 0 3px rgba(0,0,0,.8);
+	float: left;
+	position: relative;
+}
+.bigcover:hover .delete_movie {
+	display: block;
+}
+.delete_movie {
+	width: 74px;
+	font-size: 13px;
+	text-align: center;
+	display: none;
+	text-transform: uppercase;
+	background-image: -webkit-linear-gradient( top, rgba(208,71,42,1) 0%, rgba(140,47,28,1) 100% );
+	color: #fff;
+	text-shadow: 1px -1px 0 rgba(0,0,0,0.4);
+	border-radius: 3px;
+	padding: 6px 0;
+	cursor: pointer;
+	opacity: .7;
+}
+.delete_movie:hover {
+	opacity: 1;
+}
+.ext_href {
+	margin: 25px 0 0 0;
+	overflow: hidden;
+}
+.youtube {
+	width: 200px;
+	padding: 12px 0 11px 0;
+	text-align: center;
+	text-transform: uppercase;
+	background-image: -webkit-linear-gradient( top, #E11E1D 0%, #C41524 100% );
+	color: #fff;
+	text-shadow: 1px -1px 0 rgba(0,0,0,0.4);
+	border-radius: 3px;
+	font-weight: 600;
+	cursor: pointer;
+	float: left;
+	margin-left: 15px;
+}
+.imdb {
+	width: 200px;
+	padding: 12px 0 11px 0;
+	text-align: center;
+	text-transform: uppercase;
+	background-image: -webkit-linear-gradient( top, #e0bc3d 0%, #b08f1b 100% );
+	color: #fff;
+	text-shadow: 1px -1px 0 rgba(0,0,0,0.4);
+	border-radius: 3px;
+	font-weight: 600;
+	cursor: pointer;
+	text-decoration: none;
+	float: left;
+}
+.overview {
+	float: left;
+	padding: 0 0 0 25px;
+	text-shadow: 0 0 3px rgba(0,0,0,1);
+	max-width: 478px;
+	width: 100%;
+}
+.entry_morenfo h1 {
+	margin: 10px 0;
+	font-size: 19px;
+	color: #fff;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.movie_nfo h1 {
+	margin: 0;
+	color: #fff;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.bigcover span {
+	color: #2a73d0;
+	font-weight: 700;
+	font-size: 11px;
+	border: 2px solid #2a73d0;
+	border-radius: 5px;
+	padding: 1px 5px;
+	background: rgba(255,255,255,.7);
+	text-transform: uppercase;
+	position: absolute;
+	bottom: 5px;
+}
+.bigcover span:nth-child(1) {
+	left: 5px;
+}
+.bigcover span:nth-child(2) {
+	left: 47px;
+}
+.overview span {
+	color: #2a73d0;
+	font-weight: 700;
+	font-size: 14px;
+}
+.movie_nfo p {
+	color: #eaeaea;
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 24px;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	max-height: 219px;
+	padding: 0 10px 0 0;
+}
+.close_nfo, .close_entry {
+	background: url(images/close.png) no-repeat center;
+	background-size: cover;
+	position: fixed;
+	top: 10px;
+	left: 215px;
+	width: 19px;
+	height: 19px;
+	cursor: pointer;
+	z-index: 99;
+}
+.close_nfo:hover, .close_entry:hover {
+	top: 8px;
+	left: 213px;
+	width: 23px;
+	height: 23px;
+}
+.translation, .cast {
+	overflow: hidden;
+	margin: 0 0 7px 0;
+}
+.translation div:nth-child(1), .cast div:nth-child(1) {
+	color: #fff;
+	font-weight: 600;
+	font-size: 13px;
+	float: left;
+}
+.translation div:nth-child(2), .cast div:nth-child(2) {
+	float: left;
+	margin: 0 0 0 10px;
+	width: 78%;
+	color: #fff;
+	font-weight: 500;
+	font-size: 12px;
+}
+.translation img {
+	vertical-align: middle;
+	height: 22px;
+}
+.entry_morenfo {
+	display: none;
+}
+.entry_morenfo .entry_opt {
+	margin: 0 0 15px 0;
+	color: #fff;
+	font-weight: 600;
+	font-size: 17px;
+	text-align: left;
+}
+.entry_morenfo .entry_opt>span {
+	display: inline-block;
+	padding: 3px 12px;
+	color: #fff;
+	text-shadow: 1px -1px 0 rgba(0,0,0,0.4);
+	cursor: pointer;
+	border-radius: 3px;
+	font-size: 12px;
+	font-family: sans-serif;
+	font-weight: 600;
+	border: 1px solid #fff;
+	margin: 0 3px;
+}
+.entry_morenfo .entry_opt>span:hover {
+	background: rgba(255,255,255,.1);
+	box-shadow: 0 0 5px rgba(255,255,255,.7)
+}
+.entry_morenfo .entry_opt>span.selected {
+	background: rgba(255,255,255,.3);
+}
+.accept_entry {
+	background-image: -webkit-linear-gradient( top, rgba(42,115,208,1) 0%, rgba(16,88,179,1) 100% );
+	color: #fff;
+	text-shadow: 1px -1px 0 rgba(0,0,0,0.4);
+	cursor: pointer;
+	display: inline-block;
+	padding: 10px 0;
+	width: 114px;
+	text-align: center;
+	border-radius: 3px;
+	margin: 0;
+	float: right;
+}
+.onoffswitch {
+	position: absolute;
+	width: 71px;
+	right: 5px;
+	bottom: 5px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+.onoffswitch-checkbox {
+    display: none;
+}
+.onoffswitch-label {
+	display: block;
+	overflow: hidden;
+	cursor: pointer;
+	border: 2px solid #2a73d0;
+	border-radius: 5px;
+}
+.onoffswitch-inner {
+    width: 200%; 
+    margin-left: 0;
+    -moz-transition: margin 0.3s ease-in 0s; 
+    -webkit-transition: margin 0.3s ease-in 0s;
+    -o-transition: margin 0.3s ease-in 0s; 
+    transition: margin 0.3s ease-in 0s;
+}
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+   	float: left;
+	width: 50%;
+	padding: 0;
+	line-height: 15px;
+	color: white;
+	font-weight: bold;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+.onoffswitch-inner:before {
+	content: "available";
+	padding-left: 5px;
+	background-color: rgba(255,255,255,.7);
+	color: #2a73d0;
+	font-weight: 700;
+	font-size: 11px;
+	text-transform: uppercase;
+}
+.onoffswitch-inner:after {
+	content: "awarded";
+	padding-right: 5px;
+	background-color: rgba(17,17,17,.7);
+	color: #2a73d0;
+	text-align: right;
+	font-weight: 700;
+	font-size: 11px;
+	text-transform: uppercase;
+}
+.awarded {
+    margin-left: -100% !important;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+    right: 0px; 
+}
+.entry_id, .entry_morenfo {
+	position: absolute;
+}
+.rating {
+  	unicode-bidi: bidi-override;
+  	direction: rtl;
+  	text-align: left;
+  	overflow: hidden;
+}
+.rating > span {
+  	display: inline-block;
+  	position: relative;
+	width: 1.16em;
+	font-size: 17px;
+	float: left;
+}
+.rating > span.fill:before,
+.rating > span.fill ~ span.fill:before {
+   	content: "\2605";
+   	position: absolute;
+}
+.menu_mobile, .get_backup {
+	display: none;
+}
+
+/* Responsive CSS START */
+
+@media screen and (max-width: 537px) {
+	::-webkit-scrollbar {
+		width: 4px; 
+		padding: 0; 
+		margin: 0;
+	}
+	::-webkit-scrollbar-track {
+		padding: 0; 
+		margin: 0;
+	}
+
+	::-webkit-scrollbar-thumb { 
+		padding: 0; 
+		margin: 0; 
+		background: #2a73d0; 
+	}
+
+	::-webkit-scrollbar-thumb:window-inactive { 
+		padding: 0; 
+		margin: 0; 
+		background: #2a73d0; 
+	}
+	.sidebar {
+		display: none;
+		z-index: 21;
+	}
+	.menu_mobile {
+		padding: 4px;
+		border-bottom: 1px solid #000;
+		box-shadow: 0 1px 5px rgba(0,0,0,1);
+		background: #0c0c0c;
+		display: block;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 20;
+	}
+	.toggle_sidebar {
+		background: url(images/menu.png) no-repeat center;
+		background-size: cover;
+		height: 30px;
+		width: 30px;
+		cursor: pointer;
+		float: left;
+	}
+	.json_backup {
+		background: url(images/backup.png) no-repeat center;
+		background-size: cover;
+		height: 30px;
+		width: 30px;
+		cursor: pointer;
+		float: right;
+	}
+	.loading, .kill_bg, .new_movie, .content, .movie_nfo, .movie_nfo:after {
+		left: 0;
+		top: 39px;
+	}
+	.new_movie {
+		background: rgba(0,0,0,.93);
+	}
+	.content {
+		text-align: center;
+	}
+	.movie_nfo .wrapper {
+		width: 100%;
+		padding: 25px 0 10px 0;
+		overflow-x: hidden;
+		overflow-y: scroll;
+		position: fixed;
+		bottom: 0;
+		top: 38px;
+	}
+	.movie_nfo p {
+		overflow: visible;
+		max-height: none;
+	}
+	.close_nfo, .close_entry {
+		top: 5px;
+		right: 5px;
+		left: auto;
+		position: absolute;
+	}
+	.close_nfo:hover, .close_entry:hover {
+		top: 5px;
+		right: 5px;
+		left: auto;
+		width: 19px;
+		height: 19px;
+	}
+	.bigcover {
+		float: none;
+		margin: auto;
+		width: 250px;
+		height: 380px;
+	}
+	.overview {
+		float: none;
+		padding: 20px 24px;
+		margin: auto;
+		width: auto;
+		text-align: center;
+	}
+	.movie_nfo h1 {
+		overflow: visible;
+		white-space: normal;
+		font-size: 23px;
+	}
+	.overview>span {
+		width: 100%;
+		display: block;
+	}
+	.rating {
+		display: inline-table;
+		margin: auto;
+	}
+	.translation, .cast {
+		text-align: center;
+	}
+	.translation div:nth-child(1), .cast div:nth-child(1) {
+		float: none;
+	}
+	.translation div:nth-child(2), .cast div:nth-child(2) {
+		float: none;
+		width: 100%;
+		margin: 0;
+	}
+	.ext_href {
+		overflow: visible;
+	}
+	.imdb, .youtube, .kill, .love {
+		display: none;
+	}
+	.list_movie h1, .list_movie>span, .list_movie.showSpan .cover>span {
+		position: relative;
+	}
+	.entry_id>.close_entry, .entry_id>a {
+		display: none;
+	}
+	.rating > span.fill:before, 
+	.rating > span.fill ~ span.fill:before {
+		left: -0.5px;
+	}
+	.sidebar input {
+		display: none;
+	}
+	ul {
+		max-height: 86%;
+	}
+	.list_movie {
+		float: none;
+		display: inline-block !important;
+		position: relative;
+	}
+	.get_backup {
+		position: fixed;
+		z-index: 21;
+		top: 39px;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: rgba(0,0,0,.93);
+		display: none;
+		padding: 15px 0;
+	}
+	.get_backup textarea {
+		width: 90%;
+		margin: auto;
+		display: inherit;
+		height: 30%;
+		margin: 0 auto 20px auto;
+		background: transparent;
+		border: 2px solid #565656;
+		border-radius: 4px;
+		padding: 7px;
+		box-shadow: 0 0 3px #000 inset;
+		color: #fff;
+	}
+	.send_jsonbak {
+		background-image: -webkit-linear-gradient( top, rgba(42,115,208,1) 0%, rgba(16,88,179,1) 100% );
+		color: #fff;
+		text-shadow: 1px -1px 0 rgba(0,0,0,0.4);
+		cursor: pointer;
+		padding: 10px 0;
+		width: 94%;
+		text-align: center;
+		border-radius: 3px;
+		margin: auto;
+	}
+	li {
+		font-size: 17px;
+	}
+}
+</style>
+</head>
+
+<body>
+	<div class="new_movie">
+		<div class="wrapper">
+			<div class="entry_id">
+				<div class="close_entry"></div>
+				<div class="error"></div>
+				<input placeholder="IMDB or TMDB ID" value="">
+				<div class="submit_imdbid">Save Now</div><br>
+				<a href="http://www.ehow.com/how_7550918_imdb-number.html" target="_blank">*How can i get the IMDB ID of my movie?!</a>
+			</div>
+			<div class="entry_morenfo">
+				<h1></h1>
+				<div class="entry_opt">
+					Quality: 
+					<span>LQ</span>
+					<span>MQ</span>
+					<span>HQ</span>
+					<span>HD</span>
+				</div>
+				<div class="entry_opt">
+					Format: 
+					<span>File</span>
+					<span>DVD</span>
+					<span>Blue-Ray</span>
+				</div>
+				<div class="accept_entry">Accept</div>
+			</div>
+		</div>
+	</div>
+	<div class="menu_mobile">
+		<div class="toggle_sidebar"></div>
+		<div class="json_backup"></div>
+	</div>
+	<div class="get_backup">
+		<textarea placeholder="Genre Database" class="genrejson"></textarea>
+		<textarea placeholder="MyMovie Database" class="moviejson"></textarea>
+		<div class="send_jsonbak">Save Backup to Local-Storage</div>
+	</div>
+	<div class="sidebar">
+		<input placeholder="Search">
+		<h1>Filme</h1>
+		<ul>
+			<li data-value="all">All</li>
+		</ul>
+		<div class="add_movie">Add Movie</div>
+	</div>
+	<div class="content">
+		<div class="loading">
+			<svg class="load_svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="45" height="45" fill="white">
+			  	<path opacity=".25" d="M16 0 A16 16 0 0 0 16 32 A16 16 0 0 0 16 0 M16 4 A12 12 0 0 1 16 28 A12 12 0 0 1 16 4"/>
+			  	<path d="M16 0 A16 16 0 0 1 32 16 L28 16 A12 12 0 0 0 16 4z">
+			    	<animateTransform attributeName="transform" type="rotate" from="0 16 16" to="360 16 16" dur="0.8s" repeatCount="indefinite" />
+			  	</path>
+			</svg>
+		</div>
+		<div class="love">Love</div>
+		<div class="kill">Kill</div>
+		<div class="kill_bg"></div>
+		<div class="kill_dialog">
+			<p>You realy want to delete your movie database?</p>
+		</div>
+		<div class="about_dialog">
+			<p>Made with <span style="color:#e74c3c; font-size: 15px;">❤</span> by Whydesign, Ludwig Jäschke.</p>
+		</div>
+		<div class="trailer_dialog">
+			<p><iframe width="720" height="405" src="" frameborder="0" allowfullscreen></iframe></p>
+		</div>
+		<div class="movie_nfo">
+			<div class="close_nfo"></div>
+			<div class="wrapper">
+				<div class="bigcover">
+					<span></span>
+					<span></span>
+					<div class="onoffswitch">
+					    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+					    <label class="onoffswitch-label" for="myonoffswitch">
+					        <div class="onoffswitch-inner"></div>
+					    </label>
+					</div>
+					<div class="delete_movie">delete</div>
+				</div>
+				<div class="overview">
+					<h1></h1>
+					<span class="time"></span>
+					<div class="rating">
+						<span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
+					</div>
+					<p></p>
+					<div class="translation">
+						<div>Translations in:</div>
+						<div></div>
+					</div>
+					<div class="cast">
+						<div>Casts:</div>
+						<div></div>
+					</div>
+					<div class="ext_href"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

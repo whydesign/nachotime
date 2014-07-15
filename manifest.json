@@ -1,0 +1,38 @@
+{
+	"manifest_version": 2,
+	"name": "Nacho Time",
+	"description": "Your perfect movie database!",
+	"version": "1.0",
+	"icons": {
+		"128": "nachos-128.png"
+	},
+"app": {
+"content_scripts": [{
+    "matches": ["http://*/*","https://*/*"],
+    "css":["css/no-theme/jquery-ui-1.10.4.custom.min.css"],
+    "js": [
+      "js/jquery-1.10.2.min.js", 
+      "js/jquery-ui-1.10.4.custom.min.js",
+      "js/main.js"
+    ]
+  }],
+ 
+  // sets path to background scripts
+  "background": {
+    "scripts": [
+      "js/jquery-1.10.2.min.js", 
+      "js/jquery-ui-1.10.4.custom.min.js",
+      "js/main.js",
+      "background.js"
+    ]
+  },
+ 
+  // sets permissions that extension has
+  "permissions": [
+    "<all_urls>",
+    "tabs",
+    "storage",
+    "unlimitedStorage"
+  ]
+}
+}
